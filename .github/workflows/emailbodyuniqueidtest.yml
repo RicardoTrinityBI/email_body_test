@@ -33,4 +33,4 @@ jobs:
         SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
         EMAILS: ${{ secrets.EMAILS }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      run: python email_body_uniqueidtest.py
+      run: python email_body_uniqueid_test.py
