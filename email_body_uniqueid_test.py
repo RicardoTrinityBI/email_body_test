@@ -41,7 +41,7 @@ credentials = service_account.Credentials.from_service_account_file(
 # Configure logging
 logging.basicConfig(filename='email_fetch_errors.log', level=logging.ERROR)
 
-def list_messages(user_email):
+def list_messages(user_email, max_results=100):
     """List messages in the user's mailbox with pagination for the previous day."""
     all_messages = []
     page_token = None
@@ -62,7 +62,7 @@ def list_messages(user_email):
                 userId='me',
                 pageToken=page_token,
                 q=query,  # Query for filtering by date
-                maxResults=max_results - len(all_messages)  # Fetch only the remaining emails
+                maxResults=min(500, max_results - len(all_messages))  # Gmail API supports max 500
             ).execute()
             
             messages = results.get('messages', [])
@@ -79,7 +79,6 @@ def list_messages(user_email):
             break
 
     return all_messages
-
 
 
 def get_message_details(message_id, user_email, retries=3):
