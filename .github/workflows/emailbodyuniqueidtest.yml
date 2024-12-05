@@ -1,4 +1,4 @@
-name: Daily Email Fetch and Save to Snowflake
+name: Daily Email Body Fetch and Save to Snowflake
 
 on:
   workflow_dispatch:  # Allows manual execution of the workflow
