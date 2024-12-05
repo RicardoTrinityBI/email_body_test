@@ -133,7 +133,7 @@ def save_to_snowflake(data, conn, batch_size=1000):
             if len(batch) >= batch_size:
                 cursor.executemany(
                     """
-                    INSERT INTO EMAIL_BODIES_TEST (id, email_body, inserted_date)
+                    INSERT INTO TEST123 (id, email_body, inserted_date)
                     VALUES (%(id)s, %(email_body)s, %(inserted_date)s)
                     """,
                     batch
@@ -142,7 +142,7 @@ def save_to_snowflake(data, conn, batch_size=1000):
         if batch:
             cursor.executemany(
                 """
-                INSERT INTO EMAIL_BODIES_TEST (id, email_body, inserted_date)
+                INSERT INTO TEST123 (id, email_body, inserted_date)
                 VALUES (%(id)s, %(email_body)s, %(inserted_date)s)
                 """,
                 batch
