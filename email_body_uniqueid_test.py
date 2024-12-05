@@ -184,8 +184,8 @@ if __name__ == '__main__':
     for user_email in users:
         try:
             print(f"Fetching unique threads for {user_email}...")
-            messages = list_unique_threads(user_email, max_results=100)
-            print(f"Found {len(messages)} unique threads for {user_email}.")
+            messages = list_messages(user_email, max_results=100)
+            print(f"Found {len(messages)} for {user_email}.")
             
             email_details = fetch_details_concurrently(messages, user_email)
             all_email_details.extend(email_details)
