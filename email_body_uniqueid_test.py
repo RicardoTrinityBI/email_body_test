@@ -41,13 +41,16 @@ credentials = service_account.Credentials.from_service_account_file(
 # Configure logging
 logging.basicConfig(filename='email_fetch_errors.log', level=logging.ERROR)
 
-def list_messages(user_email, max_results=100, date="2024-12-03"):
-    """List up to max_results messages in the user's mailbox for a specific date."""
+def list_messages(user_email):
+    """List messages in the user's mailbox with pagination for the previous day."""
     all_messages = []
     page_token = None
 
-    # Query to filter emails from a specific date (YYYY-MM-DD)
-    query = f"after:{date} before:{date}T23:59:59"
+    # Calculate the date for 'yesterday'
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y/%m/%d')
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    # Query for emails only from the previous day
+    query = f"after:{yesterday} before:{today}"
 
     # Delegate the credentials to the user
     delegated_credentials = credentials.with_subject(user_email)
