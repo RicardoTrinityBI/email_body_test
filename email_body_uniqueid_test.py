@@ -41,32 +41,29 @@ credentials = service_account.Credentials.from_service_account_file(
 # Configure logging
 logging.basicConfig(filename='email_fetch_errors.log', level=logging.ERROR)
 
-def list_unique_threads(user_email, max_results=100, date="2024-12-03"):
-    """List up to max_results unique thread messages in the user's mailbox for a specific date."""
-    unique_threads = {}
+def list_messages(user_email, max_results=100, date="2024-12-03"):
+    """List up to max_results messages in the user's mailbox for a specific date."""
+    all_messages = []
     page_token = None
 
     # Query to filter emails from a specific date (YYYY-MM-DD)
-    query = f"-in:chats after:{date} before:{date}T23:59:59"
+    query = f"after:{date} before:{date}T23:59:59"
 
     # Delegate the credentials to the user
     delegated_credentials = credentials.with_subject(user_email)
     gmail_service = build('gmail', 'v1', credentials=delegated_credentials)
 
-    while len(unique_threads) < max_results:
+    while len(all_messages) < max_results:
         try:
             results = gmail_service.users().messages().list(
                 userId='me',
                 pageToken=page_token,
-                q=query,
-                maxResults=max_results - len(unique_threads)
+                q=query,  # Query for filtering by date
+                maxResults=max_results - len(all_messages)  # Fetch only the remaining emails
             ).execute()
             
             messages = results.get('messages', [])
-            for message in messages:
-                thread_id = message['threadId']
-                if thread_id not in unique_threads:
-                    unique_threads[thread_id] = message  # Store only one message per thread
+            all_messages.extend(messages)
 
             page_token = results.get('nextPageToken')
             if not page_token:
@@ -75,10 +72,11 @@ def list_unique_threads(user_email, max_results=100, date="2024-12-03"):
             # Avoid hitting rate limits
             time.sleep(0.5)
         except HttpError as error:
-            logging.error(f"An error occurred while listing threads for {user_email}: {error}")
+            logging.error(f"An error occurred while listing messages for {user_email}: {error}")
             break
 
-    return list(unique_threads.values())  # Return messages filtered by thread
+    return all_messages
+
 
 
 def get_message_details(message_id, user_email, retries=3):
